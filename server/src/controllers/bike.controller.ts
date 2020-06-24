@@ -27,3 +27,5 @@ class BikeController implements Controller {
         }
     };
 }
+
+export default BikeController;
