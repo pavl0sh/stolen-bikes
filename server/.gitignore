@@ -1,4 +1,3 @@
 node_modules/
-server/src/service-account.json
-
-
+src/service-account.json
+package-lock.json

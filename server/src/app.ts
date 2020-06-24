@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 
 import Controller from './interfaces/controller.interface';
+import errorMiddleware from './middleware/error.middleware';
 
 class App {
     public expressApp: express.Application;
@@ -12,6 +13,7 @@ class App {
 
         this.initializeMiddleware();
         this.initializeControllers(controllers);
+        this.initializeErrorHandling();
     }
 
     private initializeMiddleware(): void {
@@ -24,6 +26,10 @@ class App {
                 parameterLimit: 1000,
             }),
         );
+    }
+
+    private initializeErrorHandling(): void {
+        this.expressApp.use(errorMiddleware);
     }
 
     private initializeControllers(controllers: Controller[]): void {
