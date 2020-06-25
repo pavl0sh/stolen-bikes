@@ -19,7 +19,7 @@ class BikeService {
             const listDocuments: DocumentReference[] = await this.collection.listDocuments();
             const documentSnapshots: Array<Promise<DocumentSnapshot>> = [];
             for (const document of listDocuments) {
-                await documentSnapshots.push(document.get());
+                documentSnapshots.push(document.get());
             }
             const allPromises = await Promise.all(documentSnapshots);
             const data: DocumentData[] = [];
@@ -29,6 +29,42 @@ class BikeService {
             return data;
         } catch (e) {
             throw new HttpException(404, 'Bikes not found');
+        }
+    }
+
+    public getBikeById(id: string): DocumentReference<DocumentData> {
+        try {
+            return this.collection.doc(id);
+        } catch (e) {
+            throw new HttpException(404, 'Bike not found');
+        }
+    }
+
+    public async createBike(object: DocumentData): Promise<DocumentReference> {
+        return await this.collection.add(object);
+    }
+
+    public async updateBike(id: string, object: DocumentData): Promise<DocumentReference> {
+        try {
+            const ref: DocumentReference = this.collection.doc(id);
+            const snap: DocumentSnapshot = await ref.get();
+            if (!snap.exists) {
+                throw new HttpException(404, `Bike with id ${id} not found`);
+            }
+            await ref.update(object);
+            return ref;
+        } catch (e) {
+            throw new HttpException(404, 'Could not update bike');
+        }
+    }
+
+    public async deleteBike(id: string): Promise<DocumentReference> {
+        try {
+            const ref: DocumentReference = this.collection.doc(id);
+            await ref.delete();
+            return ref;
+        } catch (e) {
+            throw new HttpException(404, 'Bike not found');
         }
     }
 }
