@@ -95,8 +95,7 @@ class BikeService {
             ]);
             return updatedStatuses;
         } catch (e) {
-            const error = e || new HttpException(404, 'Failed to assign bike');
-            throw error;
+            throw e;
         }
     }
 }

@@ -59,6 +59,16 @@ class PoliceService {
             throw new HttpException(404, 'Could not fetch police officers');
         }
     }
+
+    public async deletePoliceOfficer(id: string): Promise<string> {
+        try {
+            const ref: DocumentReference = this.collection.doc(id);
+            await ref.delete();
+            return `Police officer with id ${id} succesfully deleted`;
+        } catch (e) {
+            throw new PoliceOfficerNotFoundException(id);
+        }
+    }
 }
 
 export default PoliceService;
