@@ -6,6 +6,7 @@ import {
     DocumentData,
 } from '@google-cloud/firestore';
 import HttpException from '../util/http.exception';
+import BikeNotFoundException from '../util/bikeNotFound.exception';
 
 class BikeService {
     private readonly collection: CollectionReference;
@@ -32,39 +33,45 @@ class BikeService {
         }
     }
 
-    public getBikeById(id: string): DocumentReference<DocumentData> {
-        try {
-            return this.collection.doc(id);
-        } catch (e) {
-            throw new HttpException(404, 'Bike not found');
+    public async getBikeById(id: string): Promise<DocumentData> {
+        const ref: DocumentReference = this.collection.doc(id);
+        const snap: DocumentSnapshot = await ref.get();
+        if (!snap.exists) {
+            throw new BikeNotFoundException(id);
         }
+        return snap.data();
     }
 
-    public async createBike(object: DocumentData): Promise<DocumentReference> {
-        return await this.collection.add(object);
+    public async createBike(object: DocumentData): Promise<DocumentData> {
+        const ref: DocumentReference = await this.collection.add(object);
+        const snap: DocumentSnapshot = await ref.get();
+        if (!snap.exists) {
+            throw new HttpException(404, 'Could not create bike');
+        }
+        return snap.data();
     }
 
-    public async updateBike(id: string, object: DocumentData): Promise<DocumentReference> {
+    public async updateBike(id: string, object: DocumentData): Promise<DocumentData> {
         try {
             const ref: DocumentReference = this.collection.doc(id);
             const snap: DocumentSnapshot = await ref.get();
             if (!snap.exists) {
-                throw new HttpException(404, `Bike with id ${id} not found`);
+                throw new BikeNotFoundException(id);
             }
             await ref.update(object);
-            return ref;
+            return (await ref.get()).data();
         } catch (e) {
             throw new HttpException(404, 'Could not update bike');
         }
     }
 
-    public async deleteBike(id: string): Promise<DocumentReference> {
+    public async deleteBike(id: string): Promise<string> {
         try {
             const ref: DocumentReference = this.collection.doc(id);
             await ref.delete();
-            return ref;
+            return `Bike with id ${id} succesfully deleted`;
         } catch (e) {
-            throw new HttpException(404, 'Bike not found');
+            throw new BikeNotFoundException(id);
         }
     }
 }
