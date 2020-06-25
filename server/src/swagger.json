@@ -1,0 +1,463 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Stolen Bike Cases - Backend",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "servers": [
+        {
+            "url": "/api/v1"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Bikes",
+            "description": "API for stolen bikes"
+        },
+        {
+            "name": "Police",
+            "description": "API for police"
+        }
+    ],
+    "consumes": ["application/json"],
+    "produces": ["application/json"],
+    "paths": {
+        "/bikes": {
+            "get": {
+                "tags": ["Bikes"],
+                "summary": "Get all stolen bikes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Bikes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Bikes"],
+                "summary": "Create a new stolen bike",
+                "requestBody": {
+                    "description": "Bike Object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Bike"
+                            }
+                        }
+                    }
+                },
+                "produces": ["application/json"],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Bike"
+                        }
+                    },
+                    "400": {
+                        "description": "Errors from validation middleware"
+                    },
+                    "404": {
+                        "description": "Could not create bike"
+                    }
+                }
+            }
+        },
+        "/bikes/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "ID of the bike",
+                    "type": "string",
+                    "schema": {
+                        "$ref": "#/definitions/id"
+                    }
+                }
+            ],
+            "get": {
+                "tags": ["Bikes"],
+                "summary": "Get bike with given ID",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "description": "Bike with id",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Bike"
+                        }
+                    },
+                    "404": {
+                        "description": "Bike with id not found"
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Update bike with given ID",
+                "tags": ["Bikes"],
+                "requestBody": {
+                    "description": "Bike Object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Bike"
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "description": "Bike with new values of properties",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Bike"
+                        }
+                    },
+                    "400": {
+                        "description": "The body was empty or undefined or The id is undefined"
+                    },
+                    "404": {
+                        "description": "Could not update bike"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete bike with given ID",
+                "tags": ["Bikes"],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "description": "Delete Bike with id",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bike with id succesfully deleted",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    },
+                    "404": {
+                        "description": "Bike with id not found"
+                    }
+                }
+            }
+        },
+        "/bikes/{id}/police": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "ID of the bike",
+                    "type": "string",
+                    "schema": {
+                        "$ref": "#/definitions/id"
+                    }
+                }
+            ],
+            "patch": {
+                "summary": "Assign bikes to available police officer",
+                "tags": ["Bikes"],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "description": "Bike ID",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return array of police officer and bike",
+                        "schema": {
+                            "$ref": "#/definitions/OfficerBikeList"
+                        }
+                    },
+                    "404": {
+                        "description": "No Available officers or error from update of officer and bikes"
+                    }
+                }
+            }
+        },
+        "/police": {
+            "get": {
+                "summary": "Get all not assigned police officers",
+                "tags": ["Police"],
+                "responses": {
+                    "200": {
+                        "description": "Return array of all not assigned officers"
+                    },
+                    "404": {
+                        "description": "Could not fetch police officers"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Police"],
+                "summary": "Create a new police officer",
+                "requestBody": {
+                    "description": "Officer Object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Officer"
+                            }
+                        }
+                    }
+                },
+                "produces": ["application/json"],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Officer"
+                        }
+                    },
+                    "400": {
+                        "description": "Errors from validation middleware"
+                    },
+                    "404": {
+                        "description": "Could not create police officer"
+                    }
+                }
+            }
+        },
+        "/police/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "Police officer ID",
+                    "type": "string",
+                    "schema": {
+                        "$ref": "#/definitions/id"
+                    }
+                }
+            ],
+            "get": {
+                "tags": ["Police"],
+                "summary": "Get police officer with given ID",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "description": "Police officer with id",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Officer"
+                        }
+                    },
+                    "404": {
+                        "description": "Police officer with id not found"
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Update police officer with given ID",
+                "tags": ["Police"],
+                "requestBody": {
+                    "description": "Police officer model",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Officer"
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "description": "Police officer with new values of properties",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Officer"
+                        }
+                    },
+                    "400": {
+                        "description": "The body was empty or undefined or The id is undefined"
+                    },
+                    "404": {
+                        "description": "Could not update police officer"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete police officer with given ID",
+                "tags": ["Police"],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "description": "Delete police officer with id",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Police officer with id succesfully deleted",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    },
+                    "404": {
+                        "description": "Police officer with id not found"
+                    }
+                }
+            }
+        },
+        "/police/bikes/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "Bike ID",
+                    "type": "string",
+                    "schema": {
+                        "$ref": "#/definitions/id"
+                    }
+                }
+            ],
+            "patch": {
+                "summary": "Resolve stolen bike case and automatically find new not assigned bike case and assign it to available police officer",
+                "tags": ["Police"],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "description": "Bike ID to be resolved",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return array of assigned police officer and bike or resolved bike cas if no available bikes"
+                    },
+                    "404": {
+                        "description": "Could not fetch bikes or No Available officers"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "id": {
+            "type": "string"
+        },
+        "Bike": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "comments": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "Bikes": {
+            "type": "object",
+            "properties": {
+                "bikes": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/Bike"
+                    }
+                }
+            }
+        },
+        "Officer": {
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "bikeId": {
+                    "type": "string"
+                }
+            }
+        },
+        "OfficerBikeList": {
+            "type": "array",
+            "items": {
+                "oneOf": {
+                    "$ref": "#/definitions/Bike",
+                    "$ref": "#/definitions/Officer"
+                }
+            }
+        }
+    }
+}

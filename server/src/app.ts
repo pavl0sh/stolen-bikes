@@ -1,9 +1,13 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
+import * as swaggerDocument from './swagger.json';
+
 
 import Controller from './interfaces/controller.interface';
 import errorMiddleware from './middleware/error.middleware';
+
 
 class App {
     public expressApp: express.Application;
@@ -26,6 +30,7 @@ class App {
                 parameterLimit: 1000,
             }),
         );
+        this.expressApp.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
     }
 
     private initializeErrorHandling(): void {

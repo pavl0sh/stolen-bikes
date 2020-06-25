@@ -1,13 +1,12 @@
-import Controller from '../interfaces/controller.interface';
+import IController from '../interfaces/controller.interface';
 import { Router, Request, Response, NextFunction } from 'express';
 import PoliceService from '../services/police.service';
 import db from '../db';
-
 import HttpException from '../util/http.exception';
 import PoliceOfficer from '../models/policeOfficer.model';
 import validationMiddleware from '../middleware/validation.middleware';
 
-class PoliceController implements Controller {
+class PoliceController implements IController {
     public path = '/api/v1/police';
     public router = Router();
     private readonly policeService: PoliceService;

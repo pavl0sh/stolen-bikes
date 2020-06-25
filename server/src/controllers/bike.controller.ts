@@ -1,4 +1,4 @@
-import Controller from '../interfaces/controller.interface';
+import IController from '../interfaces/controller.interface';
 import BikeService from '../services/bike.service';
 import db from '../db';
 import { Request, Response, NextFunction, Router } from 'express';
@@ -6,7 +6,7 @@ import HttpException from '../util/http.exception';
 import Bike from '../models/bike.model';
 import validationMiddleware from '../middleware/validation.middleware';
 
-class BikeController implements Controller {
+class BikeController implements IController {
     public path = '/api/v1/bikes';
     public router = Router();
     private readonly bikeService: BikeService;
