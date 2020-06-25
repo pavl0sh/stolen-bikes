@@ -2,8 +2,9 @@ import Controller from '../interfaces/controller.interface';
 import BikeService from '../services/bike.service';
 import db from '../db';
 import { Request, Response, NextFunction, Router } from 'express';
-import Bike from '../interfaces/bike.interface';
 import HttpException from '../util/http.exception';
+import Bike from '../models/bike.model';
+import validationMiddleware from '../middleware/validation.middleware';
 
 class BikeController implements Controller {
     public path = '/api/v1/bikes';
@@ -18,8 +19,8 @@ class BikeController implements Controller {
     private initializeRoutes(): void {
         this.router.get(this.path, this.getAllBikes);
         this.router.get(`${this.path}/:id`, this.getBikeById);
-        this.router.post(this.path, this.createBike);
-        this.router.patch(`${this.path}/:id`, this.updateBikeById);
+        this.router.post(this.path, validationMiddleware(Bike), this.createBike);
+        this.router.patch(`${this.path}/:id`, validationMiddleware(Bike, true), this.updateBikeById);
         this.router.patch(`${this.path}/:id/police`, this.assignBikeToPolice);
         this.router.delete(`${this.path}/:id`, this.deleteBikeById);
     }

@@ -1,4 +1,4 @@
-export default interface PoliceOfficer {
+export default interface IPoliceOfficer {
     firstName: string;
     lastName: string;
     status: string;

@@ -2,8 +2,10 @@ import Controller from '../interfaces/controller.interface';
 import { Router, Request, Response, NextFunction } from 'express';
 import PoliceService from '../services/police.service';
 import db from '../db';
-import PoliceOfficer from '../interfaces/policeOfficer.interface';
+
 import HttpException from '../util/http.exception';
+import PoliceOfficer from '../models/policeOfficer.model';
+import validationMiddleware from '../middleware/validation.middleware';
 
 class PoliceController implements Controller {
     public path = '/api/v1/police';
@@ -17,8 +19,8 @@ class PoliceController implements Controller {
 
     private initializeRoutes(): void {
         this.router.get(this.path, this.getAllNotAssignedPoliceOfficers);
-        this.router.post(this.path, this.createPoliceOfficer);
-        this.router.patch(`${this.path}/:id`, this.updatePoliceOfficerById);
+        this.router.post(this.path, validationMiddleware(PoliceOfficer), this.createPoliceOfficer);
+        this.router.patch(`${this.path}/:id`, validationMiddleware(PoliceOfficer, true), this.updatePoliceOfficerById);
         this.router.delete(`${this.path}/:id`, this.deletePoliceOfficerById);
         this.router.patch(`${this.path}/bikes/:id`, this.resolveBikeCase);
     }
