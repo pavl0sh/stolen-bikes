@@ -25,8 +25,8 @@ class BikeController implements Controller {
 
     public getAllBikes = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
         try {
-            const data = await this.bikeService.getAllBikes();
-            response.status(200).send(data);
+            const result = await this.bikeService.getAllBikes();
+            response.status(200).send(result);
         } catch (e) {
             next(e);
         }
