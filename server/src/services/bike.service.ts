@@ -7,6 +7,8 @@ import {
 } from '@google-cloud/firestore';
 import HttpException from '../util/http.exception';
 import BikeNotFoundException from '../util/bikeNotFound.exception';
+import PoliceService from './police.service';
+import db from '../db';
 
 class BikeService {
     private readonly collection: CollectionReference;
@@ -72,6 +74,29 @@ class BikeService {
             return `Bike with id ${id} succesfully deleted`;
         } catch (e) {
             throw new BikeNotFoundException(id);
+        }
+    }
+
+    public async assignBikeToPolice(bikeId: string): Promise<[DocumentData, DocumentData] | HttpException> {
+        try {
+            const policeService = new PoliceService(db);
+            const notAssignedOfficers = await policeService.getAllNotAssignedPoliceOfficers();
+            if (notAssignedOfficers.length == 0) {
+                throw new HttpException(404, 'No Available officers');
+            }
+            //auto assign of first officer in array
+            const officerId = notAssignedOfficers[0].id;
+            const updatedStatuses = await Promise.all([
+                policeService.updatePoliceOfficer(officerId, {
+                    status: 'Assigned',
+                    bikeId: bikeId,
+                }),
+                this.updateBike(bikeId, { status: 'Assigned' }),
+            ]);
+            return updatedStatuses;
+        } catch (e) {
+            const error = e || new HttpException(404, 'Failed to assign bike');
+            throw error;
         }
     }
 }

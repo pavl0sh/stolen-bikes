@@ -20,6 +20,7 @@ class BikeController implements Controller {
         this.router.get(`${this.path}/:id`, this.getBikeById);
         this.router.post(this.path, this.createBike);
         this.router.patch(`${this.path}/:id`, this.updateBikeById);
+        this.router.patch(`${this.path}/:id/police`, this.assignBikeToPolice);
         this.router.delete(`${this.path}/:id`, this.deleteBikeById);
     }
 
@@ -75,6 +76,18 @@ class BikeController implements Controller {
                 next(new HttpException(400, 'The id is undefined'));
             }
             const result = await this.bikeService.deleteBike(request.params.id);
+            response.status(200).send(result);
+        } catch (e) {
+            next(e);
+        }
+    };
+
+    public assignBikeToPolice = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+        try {
+            if (request.params.id == null) {
+                next(new HttpException(400, 'The id is undefined'));
+            }
+            const result = await this.bikeService.assignBikeToPolice(request.params.id);
             response.status(200).send(result);
         } catch (e) {
             next(e);

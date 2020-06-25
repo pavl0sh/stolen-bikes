@@ -4,7 +4,6 @@ import {
     DocumentReference,
     DocumentSnapshot,
     DocumentData,
-    QuerySnapshot,
 } from '@google-cloud/firestore';
 import HttpException from '../util/http.exception';
 import PoliceOfficerNotFoundException from '../util/policeOfficerNotFound.exception';
@@ -57,7 +56,7 @@ class PoliceService {
             });
             return documentData;
         } catch (e) {
-            throw new HttpException(404, 'No police officers with status not assigned');
+            throw new HttpException(404, 'Could not fetch police officers');
         }
     }
 }
