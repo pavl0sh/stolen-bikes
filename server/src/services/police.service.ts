@@ -7,6 +7,8 @@ import {
 } from '@google-cloud/firestore';
 import HttpException from '../util/http.exception';
 import PoliceOfficerNotFoundException from '../util/policeOfficerNotFound.exception';
+import BikeService from './bike.service';
+import db from '../db';
 
 class PoliceService {
     private readonly collection: CollectionReference;
@@ -67,6 +69,23 @@ class PoliceService {
             return `Police officer with id ${id} succesfully deleted`;
         } catch (e) {
             throw new PoliceOfficerNotFoundException(id);
+        }
+    }
+
+    public async resolveBikeCase(bikeId: string): Promise<[DocumentData, DocumentData] | DocumentData | HttpException> {
+        try {
+            const bikeService = new BikeService(db);
+            const resolvedBikeCase = await bikeService.updateBike(bikeId, { status: 'Resolved' });
+            //automatically find new not assigned bike case
+            const notAssignedBikes = await bikeService.getAllNotAssignedBikes();
+            if (notAssignedBikes.length > 0) {
+                //assign first found not assigned bike case
+                const assignedResult = await bikeService.assignBikeToPolice(notAssignedBikes[0].id);
+                return assignedResult;
+            }
+            return resolvedBikeCase;
+        } catch (e) {
+            throw e;
         }
     }
 }

@@ -20,6 +20,7 @@ class PoliceController implements Controller {
         this.router.post(this.path, this.createPoliceOfficer);
         this.router.patch(`${this.path}/:id`, this.updatePoliceOfficerById);
         this.router.delete(`${this.path}/:id`, this.deletePoliceOfficerById);
+        this.router.patch(`${this.path}/bikes/:id`, this.resolveBikeCase);
     }
 
     public getAllNotAssignedPoliceOfficers = async (
@@ -74,6 +75,18 @@ class PoliceController implements Controller {
                 next(new HttpException(400, 'The id is undefined'));
             }
             const result = await this.policeService.deletePoliceOfficer(request.params.id);
+            response.status(200).send(result);
+        } catch (e) {
+            next(e);
+        }
+    };
+
+    public resolveBikeCase = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+        try {
+            if (request.params.id == null) {
+                next(new HttpException(400, 'The id is undefined'));
+            }
+            const result = await this.policeService.resolveBikeCase(request.params.id);
             response.status(200).send(result);
         } catch (e) {
             next(e);

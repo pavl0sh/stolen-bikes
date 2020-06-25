@@ -98,6 +98,19 @@ class BikeService {
             throw e;
         }
     }
+
+    public async getAllNotAssignedBikes(): Promise<DocumentData[]> {
+        try {
+            const query = await this.collection.where('status', '==', 'Not Assigned').get();
+            const documentData: DocumentData[] = [];
+            query.forEach((doc) => {
+                documentData.push({ id: doc.id, data: doc.data() });
+            });
+            return documentData;
+        } catch (e) {
+            throw new HttpException(404, 'Could not fetch bikes');
+        }
+    }
 }
 
 export default BikeService;
