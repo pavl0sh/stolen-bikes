@@ -4,10 +4,8 @@ import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import * as swaggerDocument from './swagger.json';
 
-
 import Controller from './interfaces/controller.interface';
 import errorMiddleware from './middleware/error.middleware';
-
 
 class App {
     public expressApp: express.Application;

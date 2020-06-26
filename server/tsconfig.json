@@ -65,7 +65,6 @@
     "resolveJsonModule": true
   },
   "exclude" : [
-    "src/test",
-    "jest.config.js"
+    "src/test"
   ]
 }

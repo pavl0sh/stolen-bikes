@@ -50,7 +50,7 @@ class BikeService {
         if (!snap.exists) {
             throw new HttpException(404, 'Could not create bike');
         }
-        return snap.data();
+        return { id: snap.id, data: snap.data() };
     }
 
     public async updateBike(id: string, object: DocumentData): Promise<DocumentData> {
@@ -71,7 +71,7 @@ class BikeService {
         try {
             const ref: DocumentReference = this.collection.doc(id);
             await ref.delete();
-            return `Bike with id ${id} succesfully deleted`;
+            return `Bike with id ${id} successfully deleted`;
         } catch (e) {
             throw new BikeNotFoundException(id);
         }
