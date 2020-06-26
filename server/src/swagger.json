@@ -366,10 +366,20 @@
                 }
             }
         },
-        "/police/bikes/{id}": {
+        "/police/{officerId}/bikes/{bikeId}": {
             "parameters": [
                 {
-                    "name": "id",
+                    "name": "officerId",
+                    "in": "path",
+                    "required": true,
+                    "description": "Officer ID",
+                    "type": "string",
+                    "schema": {
+                        "$ref": "#/definitions/id"
+                    }
+                },
+                {
+                    "name": "bikeId",
                     "in": "path",
                     "required": true,
                     "description": "Bike ID",
@@ -385,7 +395,16 @@
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "id",
+                        "name": "officerId",
+                        "required": true,
+                        "description": "Officer ID to be resolved",
+                        "schema": {
+                            "$ref": "#/definitions/id"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "name": "bikeId",
                         "required": true,
                         "description": "Bike ID to be resolved",
                         "schema": {

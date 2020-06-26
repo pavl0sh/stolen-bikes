@@ -18,10 +18,11 @@ class PoliceController implements IController {
 
     private initializeRoutes(): void {
         this.router.get(this.path, this.getAllNotAssignedPoliceOfficers);
+        this.router.get(`${this.path}/:id`, this.getPoliceOfficerById);
         this.router.post(this.path, validationMiddleware(PoliceOfficer), this.createPoliceOfficer);
         this.router.patch(`${this.path}/:id`, validationMiddleware(PoliceOfficer, true), this.updatePoliceOfficerById);
         this.router.delete(`${this.path}/:id`, this.deletePoliceOfficerById);
-        this.router.patch(`${this.path}/bikes/:id`, this.resolveBikeCase);
+        this.router.patch(`${this.path}/:officerId/bikes/:bikeId`, this.resolveBikeCase);
     }
 
     public getAllNotAssignedPoliceOfficers = async (
@@ -84,11 +85,26 @@ class PoliceController implements IController {
 
     public resolveBikeCase = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
         try {
+            if (request.params.bikeId == null) {
+                next(new HttpException(400, 'The bike id is undefined'));
+            }
+            if (request.params.officerId == null) {
+                next(new HttpException(400, 'The officer id is undefined'));
+            }
+            const result = await this.policeService.resolveBikeCase(request.params.bikeId, request.params.officerId);
+            response.status(200).send(result);
+        } catch (e) {
+            next(e);
+        }
+    };
+
+    public getPoliceOfficerById = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+        try {
             if (request.params.id == null) {
                 next(new HttpException(400, 'The id is undefined'));
             }
-            const result = await this.policeService.resolveBikeCase(request.params.id);
-            response.status(200).send(result);
+            const officer = await this.policeService.getPoliceOfficerById(request.params.id);
+            response.status(200).send(officer);
         } catch (e) {
             next(e);
         }

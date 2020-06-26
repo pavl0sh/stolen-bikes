@@ -23,7 +23,7 @@ class PoliceService {
         if (!snap.exists) {
             throw new HttpException(404, 'Could not create police officer');
         }
-        return snap.data();
+        return { id: snap.id, data: snap.data() };
     }
 
     public async getPoliceOfficerById(id: string): Promise<DocumentData> {
@@ -66,16 +66,21 @@ class PoliceService {
         try {
             const ref: DocumentReference = this.collection.doc(id);
             await ref.delete();
-            return `Police officer with id ${id} succesfully deleted`;
+            return `Police officer with id ${id} successfully deleted`;
         } catch (e) {
             throw new PoliceOfficerNotFoundException(id);
         }
     }
 
-    public async resolveBikeCase(bikeId: string): Promise<[DocumentData, DocumentData] | DocumentData | HttpException> {
+    public async resolveBikeCase(
+        bikeID: string,
+        officerID: string,
+    ): Promise<[DocumentData, DocumentData] | DocumentData | HttpException> {
         try {
             const bikeService = new BikeService(db);
-            const resolvedBikeCase = await bikeService.updateBike(bikeId, { status: 'Resolved' });
+            //set current officer not assigned
+            await this.updatePoliceOfficer(officerID, { status: 'Not Assigned', bikeId: '' });
+            const resolvedBikeCase = await bikeService.updateBike(bikeID, { status: 'Resolved' });
             //automatically find new not assigned bike case
             const notAssignedBikes = await bikeService.getAllNotAssignedBikes();
             if (notAssignedBikes.length > 0) {
