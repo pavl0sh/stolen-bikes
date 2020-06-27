@@ -1,4 +1,4 @@
-# Typscript + Express + Firestore
+# Typescript + Express + Firestore
 An API REST created with Typescript, Express, Firestore and Swagger
 
 ### Before start working on code
@@ -12,6 +12,10 @@ Gets the ./build directory with js files.
 ### Source code analysis
 `npm run lint`
 Uses lint to analyze the source code.
+
+### Testing
+`npm run test`
+Uses mocha and chai to test code.
 
 ### Starting the application
 `npm run dev`
